@@ -15,14 +15,13 @@ var rocket;
 let planet;
 let posX;
 let posY;
+let useRocket=true;
+let button;
 
 function setup() {
   var canvas = createCanvas(680, 320);
-  //canvas.parent("p5container");
-  
-
+  canvas.parent("p5container");
   frameRate(100);
-
   noStroke();
   noCursor();
   angleMode(DEGREES);
@@ -40,6 +39,7 @@ function setup() {
     });
   }
 }
+
 function draw() {
   background(0);
   r = random(0, 255);
@@ -49,7 +49,9 @@ function draw() {
   posX=height/2
   posY=width/2
 
-
+  button= createButton ("Switch vehicle")
+  button.position (100,220);
+  button.mousePressed(switchVehicle);
   
 
   //stars
@@ -80,21 +82,30 @@ function draw() {
       blur = 1;
     }
   }
-  
+
   
  
 planetAnimation()
 translate(mouseX, mouseY);
   scale(0.5);
-  ufo()
-  rocket();
-  
+  //ufo()
+  //rocket();
+  if(useRocket === true){
+    rocket();
+} else {
+      ufo();
 }
-
+}
+function switchVehicle(){
+if(useRocket === true){
+   useRocket=false
+} else {
+    useRocket= true
+}
+}
 function ufo() {
   //draws UFO
   //UFO legs
-  
   fill(255);
   ellipse(posX - 15, posY + 25, 10, 19);
   ellipse(posX + 15, posY + 25, 10, 19);
@@ -290,7 +301,7 @@ function planetAnimation(){
     strokeWeight(0);
     stroke(0);
     arc(planet.x, planet.y, 50, 50, 180, 0);
-    if (planet.x > height + size) {
+    if (planet.x > width + size) {
       planet.x = -size;
     } else {
       planet.x += velocity;
