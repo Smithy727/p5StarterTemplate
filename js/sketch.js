@@ -13,10 +13,13 @@ let b;
 var ufo;
 var rocket;
 let planet;
+let posX;
+let posY;
 
 function setup() {
-  var canvas = createCanvas(800, 400);
+  var canvas = createCanvas(680, 320);
   //canvas.parent("p5container");
+  
 
   frameRate(100);
 
@@ -42,6 +45,10 @@ function draw() {
   r = random(0, 255);
   g = random(0, 200);
   b = random(0, 25);
+
+  posX=height/2
+  posY=width/2
+
 
   
 
@@ -73,102 +80,105 @@ function draw() {
       blur = 1;
     }
   }
-  planetAnimation()
-
-  translate(mouseX, mouseY);
+  
+  
+ 
+planetAnimation()
+translate(mouseX, mouseY);
   scale(0.5);
-  //planetA();
-  // ufo()
+  ufo()
   rocket();
+  
 }
 
 function ufo() {
   //draws UFO
   //UFO legs
+  
   fill(255);
-  ellipse(mouseX - 15, mouseY + 25, 10, 19);
-  ellipse(mouseX + 15, mouseY + 25, 10, 19);
+  ellipse(posX - 15, posY + 25, 10, 19);
+  ellipse(posX + 15, posY + 25, 10, 19);
 
   //body
   fill(48, 141, 185);
-  ellipse(mouseX, mouseY + 10, 60, 40); //undercarriage
+  ellipse(posX, posY + 10, 60, 40); //undercarriage
   noStroke();
   stroke(255);
   fill(255);
-  ellipse(mouseX, mouseY + 3, 90, 33); //white ellipse
+  ellipse(posX, posY + 3, 90, 33); //white ellipse
   fill(100);
   noStroke();
-  ellipse(mouseX, mouseY - 3, 88, 20); //grey inner ellipse
+  ellipse(posX, posY - 3, 88, 20); //grey inner ellipse
 
   fill(252, 256, 50, 80);
   stroke(255);
-  ellipse(mouseX, mouseY - 17, 48, 46); //cockpit glass
+  ellipse(posX, posY - 17, 48, 46); //cockpit glass
   stroke(1);
   fill(180);
-  ellipse(mouseX, mouseY - 2, 40, 16); //grey ockpit lip
+  ellipse(posX, posY - 2, 40, 16); //grey ockpit lip
   fill(0);
-  ellipse(mouseX, mouseY - 1, 35, 12); //black cockpit
+  ellipse(posX, posY - 1, 35, 12); //black cockpit
 
   //body
   fill(255);
-  rect(mouseX - 10, mouseY - 5, 20, 8);
+  rect(posX - 10, posY - 5, 20, 8);
   triangle(
-    mouseX - 12,
-    mouseY - 10,
-    mouseX + 12,
-    mouseY - 10,
-    mouseX,
-    mouseY + 6
+    posX - 12,
+    posY - 10,
+    posX + 12,
+    posY - 10,
+    posX,
+    posY + 6
   );
 
   noFill();
   stroke(255);
   strokeWeight(2);
-  arc(mouseX, mouseY - 10, 20, 20, 190, 0); //steering
+  arc(posX, posY - 10, 20, 20, 190, 0); //steering
   //allien
   noStroke();
   fill(100, 255, 100);
-  ellipse(mouseX, mouseY - 20, 25, 30); //head
+  ellipse(posX, posY - 20, 25, 30); //head
   //mouth
   stroke(5, 55, 30);
   strokeWeight(2);
   fill(0);
-  ellipse(mouseX, mouseY - 10, 5, 8);
+  ellipse(posX, posY - 10, 5, 8);
 
   noFill();
   stroke(255);
   strokeWeight(2);
-  arc(mouseX, mouseY, 20, 20, 190, 0); //steering
+  arc(posX, posY, 20, 20, 190, 0); //steering
   noStroke();
   fill(100, 255, 100);
-  ellipse(mouseX - 10, mouseY - 2, 7, 8); //left hand
-  ellipse(mouseX + 10, mouseY - 2, 7, 8); //right hand
+  ellipse(posX - 10, posY - 2, 7, 8); //left hand
+  ellipse(posX + 10, posY - 2, 7, 8); //right hand
 
   fill(0);
   stroke(0);
   strokeWeight(6);
-  line(mouseX - 6, mouseY - 23, mouseX - 5, mouseY - 20); //left eye
-  line(mouseX + 6, mouseY - 23, mouseX + 5, mouseY - 20); //right eye
+  line(posX - 6, posY - 23, posX - 5, posY - 20); //left eye
+  line(posX + 6, posY - 23, posX + 5, posY - 20); //right eye
 
   noStroke();
   fill(255);
-  ellipse(mouseX - 6, mouseY - 23, 3, 3); //left eye whites
-  ellipse(mouseX - 3.5, mouseY - 19, 1, 1.5); //right eye whites smallest
-  ellipse(mouseX + 6, mouseY - 23, 3, 3); //right eye whites
-  ellipse(mouseX + 3.5, mouseY - 19, 1, 1.5); //right eye whites smallest
+  ellipse(posX - 6, posY - 23, 3, 3); //left eye whites
+  ellipse(posX - 3.5, posY - 19, 1, 1.5); //right eye whites smallest
+  ellipse(posX + 6, posY - 23, 3, 3); //right eye whites
+  ellipse(posX + 3.5, posY - 19, 1, 1.5); //right eye whites smallest
   //cockpit glass
   fill(252, 256, 50, 80);
   strokeWeight(1);
   stroke(255);
-  ellipse(mouseX, mouseY - 17, 48, 46);
+  ellipse(posX, posY - 17, 48, 46);
   //lights
   stroke(0);
   fill(r, g, b);
-  ellipse(mouseX - 40, mouseY + 6, 6, 6);
-  ellipse(mouseX + 40, mouseY + 6, 6, 6);
-  ellipse(mouseX - 20, mouseY + 12.5, 6, 6);
-  ellipse(mouseX + 20, mouseY + 12.5, 6, 6);
-  ellipse(mouseX, mouseY + 14, 6, 6);
+  ellipse(posX - 40, posY + 6, 6, 6);
+  ellipse(posX + 40, posY + 6, 6, 6);
+  ellipse(posX - 20, posY + 12.5, 6, 6);
+  ellipse(posX + 20, posY + 12.5, 6, 6);
+  ellipse(posX, posY + 14, 6, 6);
 }
 
 function rocket() {
@@ -233,7 +243,7 @@ function rocket() {
   fill(5, 58, 127);
   ellipse(mouseX, mouseY, 120, 35);
 
-  rectMode(RADIUS);
+  //rectMode(RADIUS);
   rect(mouseX + 28, mouseY, 30, 12, 7);
   rect(mouseX + 38, mouseY, 23, 11, 7);
   rect(mouseX + 40, mouseY, 20, 11, 3);
