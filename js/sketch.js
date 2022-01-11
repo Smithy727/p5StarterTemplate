@@ -19,8 +19,9 @@ let useRocket=true;
 let button;
 
 function setup() {
-  var canvas = createCanvas(1220, 400);
+  var canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent("p5container");
+
   frameRate(100);
  //noStroke();
   noCursor();
