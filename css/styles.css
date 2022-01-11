@@ -7,14 +7,22 @@
 }
 
 body{
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    justify-content: center;
-    align-items: center;
+    background-image: url("https://img.wallpapersafari.com/desktop/1600/900/26/2/xAmirS.jpg");
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+  
 }
 
 h1{
     text-align: center;
     padding-bottom: 10px;
+    color: white;
+
+
+   
+}
+p{
+    color: white;
 }
