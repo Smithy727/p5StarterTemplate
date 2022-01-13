@@ -19,7 +19,7 @@ let useRocket = true;
 let button;
 
 function setup() {
-  var canvas = createCanvas(windowWidth, windowHeight);
+  var canvas = createCanvas(1200, 700);
   canvas.parent("p5container");
 
   frameRate(100);
