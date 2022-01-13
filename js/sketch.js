@@ -15,7 +15,7 @@ var rocket;
 let planet;
 let posX;
 let posY;
-let useRocket=true;
+let useRocket = true;
 let button;
 
 function setup() {
@@ -23,7 +23,7 @@ function setup() {
   canvas.parent("p5container");
 
   frameRate(100);
- //noStroke();
+  //noStroke();
   noCursor();
   angleMode(DEGREES);
 
@@ -47,14 +47,12 @@ function draw() {
   g = random(0, 200);
   b = random(0, 25);
 
-  posX= mouseX;
-  posY= mouseY;
-    //creates button for switching vehicle
-  button= createButton ("Switch vehicle")
-  button.position (width/2,height+50);
+  posX = mouseX;
+  posY = mouseY;
+  //creates button for switching vehicle
+  button = createButton("Switch vehicle");
+  button.position(width / 2, height + 50);
   button.mousePressed(switchVehicle);
-  
-  
 
   //stars
 
@@ -84,20 +82,20 @@ function draw() {
       blur = 1;
     }
   }
-  if(useRocket === true){
+  if (useRocket === true) {
     rocket();
-} else {
+  } else {
     ufo();
-}
+  }
 
-planetAnimation()
+  planetAnimation();
 }
-function switchVehicle(){
-if(useRocket === true){
-   useRocket=false
-} else {
-    useRocket= true
-}
+function switchVehicle() {
+  if (useRocket === true) {
+    useRocket = false;
+  } else {
+    useRocket = true;
+  }
 }
 function ufo() {
   //draws UFO
@@ -128,14 +126,14 @@ function ufo() {
 
   //body
   fill(255);
-  rect(posX - 5, posY - 2.5, 10, 4);
+  rect(posX, posY - 2.5, 10, 4);
   triangle(
     posX - 6, //12,
     posY - 5, //10,
-    posX + 6,//12,
-    posY - 5,//10,
+    posX + 6, //12,
+    posY - 5, //10,
     posX,
-    posY + 3,//6
+    posY + 3 //6
   );
 
   noFill();
@@ -177,7 +175,7 @@ function ufo() {
   fill(252, 256, 50, 80);
   strokeWeight(1);
   stroke(255);
-  ellipse(posX, posY -10, 24, 23);
+  ellipse(posX, posY - 10, 24, 23);
   //lights
   stroke(0);
   fill(r, g, b);
@@ -186,8 +184,8 @@ function ufo() {
   ellipse(posX - 10, posY + 6, 3, 3);
   ellipse(posX + 10, posY + 6, 3, 3);
   ellipse(posX, posY + 7, 3, 3);
-  stroke(255)
-  strokeWeight(2)
+  stroke(255);
+  strokeWeight(2);
 }
 
 function rocket() {
@@ -202,10 +200,10 @@ function rocket() {
   strokeJoin(ROUND);
   fill(r + 20, g + 100, b + 80);
   triangle(
-    mouseX + 27.5, 
-    mouseY + 4, 
-    mouseX + 27.5, 
-    mouseY - 4, 
+    mouseX + 27.5,
+    mouseY + 4,
+    mouseX + 27.5,
+    mouseY - 4,
     mouseX + flameSize,
     mouseY
   );
@@ -216,59 +214,52 @@ function rocket() {
   noStroke();
   fill(23, 77, 158);
   triangle(
-    mouseX - 17, 
-    mouseY - 7.5, 
-    mouseX - 17, 
-    mouseY + 7.5, 
-    mouseX - 35, 
+    mouseX - 17,
+    mouseY - 7.5,
+    mouseX - 17,
+    mouseY + 7.5,
+    mouseX - 35,
     mouseY - 0
   );
   //upper rear wing
   triangle(
-    mouseX + 39.5, 
-    mouseY - 12.5, 
-    mouseX + 20, 
+    mouseX + 39.5,
+    mouseY - 12.5,
+    mouseX + 20,
     mouseY,
-    mouseX - 35, 
+    mouseX - 35,
     mouseY + 0
   );
   //lower rear wing
   triangle(
-    mouseX + 39.5, 
+    mouseX + 39.5,
     mouseY + 12.5,
     mouseX + 20,
     mouseY,
     mouseX - 35,
     mouseY + 0
   );
-  triangle(
-    mouseX - 5,
-    mouseY - 8,
-    mouseX + 40, 
-    mouseY,
-    mouseX - 5, 
-    mouseY + 8, 
-  );
+  triangle(mouseX - 5, mouseY - 8, mouseX + 40, mouseY, mouseX - 5, mouseY + 8);
   noStroke();
   20;
   //darker blue body
   fill(5, 58, 127);
-ellipse(mouseX, mouseY, 60, 17.5);
+  ellipse(mouseX, mouseY, 60, 17.5);
 
   rectMode(RADIUS);
-rect(mouseX + 14, mouseY, 15, 6, 5);
-rect(mouseX + 19, mouseY, 11.5, 5.5, 5);
-rect(mouseX + 20, mouseY, 10, 5.5, 1.5);
-rect(mouseX + 25, mouseY, 5.5, 5.5, 1.5);
+  rect(mouseX + 14, mouseY, 15, 6, 5);
+  rect(mouseX + 19, mouseY, 11.5, 5.5, 5);
+  rect(mouseX + 20, mouseY, 10, 5.5, 1.5);
+  rect(mouseX + 25, mouseY, 5.5, 5.5, 1.5);
 
   //windows
   strokeWeight(0.5);
-  stroke(255);          
+  stroke(255);
   fill(235, 235, 235);
 
-ellipse(mouseX - 12.5, mouseY, 7.5, 7.5);
-ellipse(mouseX, mouseY, 7.5, 7.5);
-ellipse(mouseX + 12.5, mouseY, 7.5, 7.5);
+  ellipse(mouseX - 12.5, mouseY, 7.5, 7.5);
+  ellipse(mouseX, mouseY, 7.5, 7.5);
+  ellipse(mouseX + 12.5, mouseY, 7.5, 7.5);
 }
 //accelerate and decelerate background
 function keyPressed() {
@@ -285,11 +276,11 @@ function keyPressed() {
     velocity = 8;
   }
 }
-function planetAnimation(){
-    //planets
+function planetAnimation() {
+  //planets
   for (let j = 0; j < planets.length; j++) {
     let planet = planets[j];
-    
+
     //planet
     stroke(0);
     fill(255);
@@ -309,5 +300,5 @@ function planetAnimation(){
     } else {
       planet.x += velocity;
     }
-    }
+  }
 }
