@@ -18,7 +18,35 @@ let posY;
 let useRocket = true;
 let button;
 
+
+//Global varialbles for accelerometer
+let serial; //variable to hold an instance of the serialport library
+let portName = 'COM4'; //fill in your serial port name here
+let dataVal = 0;
+
+let xAxis;
+let yAxis;
+let xPin;
+let yPin;
+var laser;
+
+
 function setup() {
+
+  // setup for accelerometer 
+  serial = new p5.SerialPort(); // make a new instance of the serialport library
+  serial.on ('list', printList); // set a callback function for the serialport list event
+  serial.on('connected', serverConnected); //callback for connecting to the server
+  serial.on('open', portOpen); //callbak fot the port opening
+  serial.on('data', gotData); // callback for when new data arrives
+  serial.on('error', serialError); // callback for errors
+  serial.on('close', portClosed); // callback for port closing
+  serial.list(); // list the serial ports
+  
+  let options = { baudrate: 9600}; // the data rate
+  serial.open(portName, options);
+
+  //
   var canvas = createCanvas(1200, 700);
   canvas.parent("p5container");
 
@@ -46,9 +74,9 @@ function draw() {
   r = random(0, 255);
   g = random(0, 200);
   b = random(0, 25);
-
-  posX = mouseX;
-  posY = mouseY;
+ 
+  posX = xAxis+550;        //mouseX
+  posY = yAxis +350;       //mouseY;
   //creates button for switching vehicle
   button = createButton("Switch vehicle");
   button.position(width / 2, height + 50);
@@ -69,16 +97,16 @@ function draw() {
     if (velocity >= 0) {
       blur = 0.5;
     }
-    if (velocity == 8) {
+    if (velocity == 9) {
       blur = 50;
     }
-    if (velocity == 6) {
+    if (velocity == 7) {
       blur = 20;
     }
-    if (velocity == 4) {
+    if (velocity == 5) {
       blur = 8;
     }
-    if (velocity == 2) {
+    if (velocity == 2.5) {
       blur = 1;
     }
   }
@@ -89,6 +117,8 @@ function draw() {
   }
 
   planetAnimation();
+
+  shootLaser();
 }
 function switchVehicle() {
   if (useRocket === true) {
@@ -191,6 +221,7 @@ function ufo() {
 function rocket() {
   //draws the rocket
   //flames
+  
   let r = random(210, 255);
   let g = random(60, 130);
   let b = random(0, 40);
@@ -200,12 +231,12 @@ function rocket() {
   strokeJoin(ROUND);
   fill(r + 20, g + 100, b + 80);
   triangle(
-    mouseX + 27.5,
-    mouseY + 4,
-    mouseX + 27.5,
-    mouseY - 4,
-    mouseX + flameSize,
-    mouseY
+    posX + 27.5,
+    posY + 4,
+    posX + 27.5,
+    posY - 4,
+    posX + flameSize,
+    posY
   );
 
   //spaceship
@@ -214,66 +245,66 @@ function rocket() {
   noStroke();
   fill(23, 77, 158);
   triangle(
-    mouseX - 17,
-    mouseY - 7.5,
-    mouseX - 17,
-    mouseY + 7.5,
-    mouseX - 35,
-    mouseY - 0
+    posX - 17,
+    posY - 7.5,
+    posX - 17,
+    posY + 7.5,
+    posX - 35,
+    posY - 0
   );
   //upper rear wing
   triangle(
-    mouseX + 39.5,
-    mouseY - 12.5,
-    mouseX + 20,
-    mouseY,
-    mouseX - 35,
-    mouseY + 0
+    posX + 39.5,
+    posY - 12.5,
+    posX + 20,
+    posY,
+    posX - 35,
+    posY + 0
   );
   //lower rear wing
   triangle(
-    mouseX + 39.5,
-    mouseY + 12.5,
-    mouseX + 20,
-    mouseY,
-    mouseX - 35,
-    mouseY + 0
+    posX + 39.5,
+    posY + 12.5,
+    posX + 20,
+    posY,
+    posX - 35,
+    posY + 0
   );
-  triangle(mouseX - 5, mouseY - 8, mouseX + 40, mouseY, mouseX - 5, mouseY + 8);
+  triangle(posX - 5, posY - 8, posX + 40, posY, posX - 5, posY + 8);
   noStroke();
   20;
   //darker blue body
   fill(5, 58, 127);
-  ellipse(mouseX, mouseY, 60, 17.5);
+  ellipse(posX, posY, 60, 17.5);
 
   rectMode(RADIUS);
-  rect(mouseX + 14, mouseY, 15, 6, 5);
-  rect(mouseX + 19, mouseY, 11.5, 5.5, 5);
-  rect(mouseX + 20, mouseY, 10, 5.5, 1.5);
-  rect(mouseX + 25, mouseY, 5.5, 5.5, 1.5);
+  rect(posX + 14, posY, 15, 6, 5);
+  rect(posX + 19, posY, 11.5, 5.5, 5);
+  rect(posX + 20, posY, 10, 5.5, 1.5);
+  rect(posX + 25, posY, 5.5, 5.5, 1.5);
 
   //windows
   strokeWeight(0.5);
   stroke(255);
   fill(235, 235, 235);
 
-  ellipse(mouseX - 12.5, mouseY, 7.5, 7.5);
-  ellipse(mouseX, mouseY, 7.5, 7.5);
-  ellipse(mouseX + 12.5, mouseY, 7.5, 7.5);
+  ellipse(posX - 12.5, posY, 7.5, 7.5);
+  ellipse(posX, posY, 7.5, 7.5);
+  ellipse(posX + 12.5, posY, 7.5, 7.5);
 }
 //accelerate and decelerate background
 function keyPressed() {
   if (keyCode === 49) {
-    velocity = 0.5;
+    velocity = 0.8;
   } else if (keyCode === 50) {
-    velocity = 2;
+    velocity = 2.5;
   } else if (keyCode === 51) {
-    velocity = 4;
+    velocity = 5;
     size = 1;
   } else if (keyCode === 52) {
-    velocity = 6;
+    velocity = 7;
   } else if (keyCode === 53) {
-    velocity = 8;
+    velocity = 9;
   }
 }
 function planetAnimation() {
@@ -302,3 +333,63 @@ function planetAnimation() {
     }
   }
 }
+//Accelerometer functions
+
+function printList (portList){
+  //postList is an array of serial port names
+  for (var i = 0; i < portList.length; i++){
+    //Display the list of the console;
+    console.log(i + portList[i]);
+  }
+
+
+}
+function serverConnected(){
+  console.log('connected to server.');
+}
+
+function portOpen(){
+  console.log('the serial port opened.');
+}
+
+function gotData(){
+  //console.log(serial.readLine());
+  let currentString = serial.readLine();
+
+  trim (currentString);
+  if (!currentString) return;
+  let dataArray = currentString.split(" ");
+  xPin = Number(dataArray[1]);
+  yPin = Number (dataArray[2]);
+  laser = Number (dataArray[3]);
+  // console.log("m");
+  // console.log(dataArray[1]);
+  // console.log(dataArray[2]);
+  // console.log(dataArray[3]);
+  
+
+  xAxis = xPin;
+  yAxis = yPin; 
+
+}
+
+function shootLaser(){
+  if (laser == 1){
+    push();
+    stroke(255);
+    strokeWeight(10);
+    line(posX,posY,0, posY);
+    pop();
+    
+   }
+  }
+
+
+function serialError(err) {
+  console.log('Something went wrong with the serial port.' + err)
+}
+
+function portClosed(){
+  console.log('The serial port closed.');
+}
+
