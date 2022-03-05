@@ -1,7 +1,7 @@
 //Global variables
 const starCount = 300;
 const planets = [];
-const planetCount = 4;
+const planetCount = 6;
 let size = 0.3;
 let velocity = 0;
 const stars = [];
@@ -19,6 +19,7 @@ let useRocket = true;
 let button;
 
 
+
 //Global varialbles for accelerometer
 let serial; //variable to hold an instance of the serialport library
 let portName = 'COM4'; //fill in your serial port name here
@@ -29,6 +30,12 @@ let yAxis;
 let xPin;
 let yPin;
 var laser;
+let laserHitX = 0;
+//let x1 = planet.x
+//let y1 = planet.y
+let x2 = posX;
+let y2 = posY;
+let cursor;
 
 
 function setup() {
@@ -65,8 +72,10 @@ function setup() {
     planets.push({
       x: random(width),
       y: random(height),
+      radius: random(50,90),
     });
   }
+
 }
 
 function draw() {
@@ -75,14 +84,20 @@ function draw() {
   g = random(0, 200);
   b = random(0, 25);
  
-  posX = xAxis+550;        //mouseX
-  posY = yAxis +350;       //mouseY;
+  posX = mouseX  //xAxis+550;        //position of x
+  posY = mouseY  //yAxis +350;       //position of y
+
+  planetAnimation();
+
   //creates button for switching vehicle
   button = createButton("Switch vehicle");
   button.position(width / 2, height + 50);
   button.mousePressed(switchVehicle);
 
-  //stars
+  
+  shootLaser();
+
+  //draws the stars
 
   for (let i = 0; i < stars.length; i++) {
     let star = stars[i];
@@ -95,7 +110,7 @@ function draw() {
       star.x += velocity;
     }
     if (velocity >= 0) {
-      blur = 0.5;
+      blur = 0.5; //adds blur to the stars when speed increases
     }
     if (velocity == 9) {
       blur = 50;
@@ -109,17 +124,61 @@ function draw() {
     if (velocity == 2.5) {
       blur = 1;
     }
-  }
+  }// switches vehicles
   if (useRocket === true) {
     rocket();
   } else {
     ufo();
   }
-
-  planetAnimation();
-
-  shootLaser();
 }
+
+function planetAnimation() {
+  //planets
+  cursor= posX, posY;
+  let isHit = false;
+  for (let j = 0; j < planets.length; j++) {
+    let planet = planets[j];
+
+    //////////////////////////////////////////////code for collision/////////////////////////////////////////////////////////////////////
+    
+  let distance = dist(posX, posY, planet.x, planet.y);
+  let d = posY - planet.y;
+  d = Math.abs(d); //disregards +/-
+  if (distance < planet.radius) {
+  fill(255,255,0)
+  ellipse (posX, posY, 100)
+  console.log("Collision!")
+  } 
+    if (d < planet.radius/2 && posX > planet.x ){
+      laserHitX = planet.x;
+      isHit =true;
+  } 
+    //planet
+    stroke(0);
+    fill(255);
+    strokeWeight(1);
+    ellipse(planet.x, planet.y, planet.radius);
+    //ring
+    noFill();
+    strokeWeight(8);
+    stroke(random(255), random(255), random(255), random(80, 100));
+    ellipse(planet.x, planet.y, planet.radius+30, planet.radius/2);
+    fill(255, 255, 255);
+    strokeWeight(0);
+    stroke(0);
+    arc(planet.x, planet.y, planet.radius, planet.radius, 180, 0);
+    if (planet.x > width + size) {
+      planet.x = -size;
+    } else {
+      planet.x += velocity;
+    }
+  }
+
+  if(isHit == false) {
+    laserHitX = 0;
+  }
+}
+
 function switchVehicle() {
   if (useRocket === true) {
     useRocket = false;
@@ -225,7 +284,7 @@ function rocket() {
   let r = random(210, 255);
   let g = random(60, 130);
   let b = random(0, 40);
-  flameSize = random(60, 125);
+  flameSize = random(60, 125); //randomises the size of the flame between 60, 125
   stroke(r, g, b);
   strokeWeight(2.5);
   strokeJoin(ROUND);
@@ -307,50 +366,8 @@ function keyPressed() {
     velocity = 9;
   }
 }
-function planetAnimation() {
-  //planets
-  for (let j = 0; j < planets.length; j++) {
-    let planet = planets[j];
 
-    //planet
-    stroke(0);
-    fill(255);
-    strokeWeight(1);
-    ellipse(planet.x, planet.y, 52, 52);
-    //ring
-    noFill();
-    strokeWeight(8);
-    stroke(random(255), random(255), random(255), random(80, 100));
-    ellipse(planet.x, planet.y, random(70, 90), random(20, 30));
-    fill(255, 255, 255);
-    strokeWeight(0);
-    stroke(0);
-    arc(planet.x, planet.y, 50, 50, 180, 0);
-    if (planet.x > width + size) {
-      planet.x = -size;
-    } else {
-      planet.x += velocity;
-    }
-  }
-}
 //Accelerometer functions
-
-function printList (portList){
-  //postList is an array of serial port names
-  for (var i = 0; i < portList.length; i++){
-    //Display the list of the console;
-    console.log(i + portList[i]);
-  }
-
-
-}
-function serverConnected(){
-  console.log('connected to server.');
-}
-
-function portOpen(){
-  console.log('the serial port opened.');
-}
 
 function gotData(){
   //console.log(serial.readLine());
@@ -376,15 +393,30 @@ function gotData(){
 function shootLaser(){
   if (laser == 1){
     push();
-    stroke(255);
-    strokeWeight(10);
-    line(posX,posY,0, posY);
+    stroke(r,g,b);
+    strokeWeight(3);
+    line(posX,posY,laserHitX, posY);
     pop();
     
    }
   }
 
+function printList (portList){
+  //postList is an array of serial port names
+  for (var i = 0; i < portList.length; i++){
+    //Display the list of the console;
+    console.log(i + portList[i]);
+  }
 
+
+}
+function serverConnected(){
+  console.log('connected to server.');
+}
+
+function portOpen(){
+  console.log('the serial port opened.');
+}
 function serialError(err) {
   console.log('Something went wrong with the serial port.' + err)
 }
