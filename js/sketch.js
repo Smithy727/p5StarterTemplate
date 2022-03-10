@@ -2,10 +2,10 @@
 const starCount = 300;
 const planets = [];
 const planetCount = 6;
-let size = 0.3;
-let velocity = 0;
 const stars = [];
-let blur = 0;
+let velocity = 0;
+let size = 0.3;
+let blur = 0; 
 let randomColour;
 let r;
 let g;
@@ -17,40 +17,31 @@ let posX;
 let posY;
 let useRocket = true;
 let button;
-
-
-
-//Global varialbles for accelerometer
+let hasCrashed = false;
+let crashTimer = 0;
 let serial; //variable to hold an instance of the serialport library
-let portName = 'COM4'; //fill in your serial port name here
+let portName = "COM5"; //fill in your serial port name here
 let dataVal = 0;
-
 let xAxis;
 let yAxis;
 let xPin;
 let yPin;
 var laser;
 let laserHitX = 0;
-//let x1 = planet.x
-//let y1 = planet.y
-let x2 = posX;
-let y2 = posY;
-let cursor;
-
+let img;
 
 function setup() {
-
-  // setup for accelerometer 
+  // setup for accelerometer
   serial = new p5.SerialPort(); // make a new instance of the serialport library
-  serial.on ('list', printList); // set a callback function for the serialport list event
-  serial.on('connected', serverConnected); //callback for connecting to the server
-  serial.on('open', portOpen); //callbak fot the port opening
-  serial.on('data', gotData); // callback for when new data arrives
-  serial.on('error', serialError); // callback for errors
-  serial.on('close', portClosed); // callback for port closing
+  serial.on("list", printList); // set a callback function for the serialport list event
+  serial.on("connected", serverConnected); //callback for connecting to the server
+  serial.on("open", portOpen); //callbak fot the port opening
+  serial.on("data", gotData); // callback for when new data arrives
+  serial.on("error", serialError); // callback for errors
+  serial.on("close", portClosed); // callback for port closing
   serial.list(); // list the serial ports
-  
-  let options = { baudrate: 9600}; // the data rate
+
+  let options = { baudrate: 9600 }; // the data rate
   serial.open(portName, options);
 
   //
@@ -72,87 +63,116 @@ function setup() {
     planets.push({
       x: random(width),
       y: random(height),
-      radius: random(50,90),
+      radius: random(50, 90),
     });
   }
-
+}
+function reSetup() {
+  for (let i = 0; i < starCount; i++) {
+    stars[i] = {
+      x: random(width),
+      y: random(height),
+    };
+  }
+  for (let j = 0; j < planetCount; j++) {
+    planets[j] = {
+      x: random(width),
+      y: random(height),
+      radius: random(50, 90),
+    };
+  }
 }
 
 function draw() {
-  background(0);
-  r = random(0, 255);
-  g = random(0, 200);
-  b = random(0, 25);
- 
-  posX = mouseX  //xAxis+550;        //position of x
-  posY = mouseY  //yAxis +350;       //position of y
+  if (drawing) {
+    background(0);
+    r = random(0, 255);
+    g = random(0, 200);
+    b = random(0, 25);
 
-  planetAnimation();
+    posX = xAxis + 550; //position of x changed from mouseX
+    posY = yAxis + 350; //position of y changed from mouseY
 
-  //creates button for switching vehicle
-  button = createButton("Switch vehicle");
-  button.position(width / 2, height + 50);
-  button.mousePressed(switchVehicle);
+    planetAnimation();
 
-  
-  shootLaser();
+    //creates button for switching vehicle
+    button = createButton("Switch vehicle");
+    button.position(width / 2, height + 50);
+    button.mousePressed(switchVehicle);
 
-  //draws the stars
+    shootLaser();
 
-  for (let i = 0; i < stars.length; i++) {
-    let star = stars[i];
+    //draws the stars
 
-    ellipse(star.x, star.y, blur, size);
+    for (let i = 0; i < stars.length; i++) {
+      let star = stars[i];
 
-    if (star.x > width + size) {
-      star.x = -size;
+      ellipse(star.x, star.y, blur, size);
+
+      if (star.x > width + size) {
+        star.x = -size;
+      } else {
+        star.x += velocity;
+        //console.log(velocity);
+      }
+      if (velocity >= 0) {
+        blur = 0.5; //adds blur to the stars when speed increases
+      }
+      if (velocity == 9) {
+        blur = 50;
+      }
+      if (velocity == 7) {
+        blur = 20;
+      }
+      if (velocity == 5) {
+        blur = 8;
+      }
+      if (velocity == 2.5) {
+        blur = 1;
+      }
+    } 
+    if (hasCrashed) {
+      push();
+      translate(posX - 50, posY - 70);
+      scale(5);
+      image(img, 0, 0); //draws the explosion image if vehicle crashed into planets
+      pop();
+      crashTimer++; 
+      if (crashTimer > 30) { //image lasts for 30 frames before dissapearing 
+        hasCrashed = false; 
+        crashTimer = 0; //resets the timer
+        reSetup(); //redraws the planets
+      }
+    } else if (useRocket === true) {
+      rocket();
     } else {
-      star.x += velocity;
+      ufo();
     }
-    if (velocity >= 0) {
-      blur = 0.5; //adds blur to the stars when speed increases
-    }
-    if (velocity == 9) {
-      blur = 50;
-    }
-    if (velocity == 7) {
-      blur = 20;
-    }
-    if (velocity == 5) {
-      blur = 8;
-    }
-    if (velocity == 2.5) {
-      blur = 1;
-    }
-  }// switches vehicles
-  if (useRocket === true) {
-    rocket();
-  } else {
-    ufo();
   }
+}
+
+function preload() {
+  img = loadImage("assets/Explosion.png");
 }
 
 function planetAnimation() {
   //planets
-  cursor= posX, posY;
+
   let isHit = false;
   for (let j = 0; j < planets.length; j++) {
     let planet = planets[j];
+    let distance = dist(posX, posY, planet.x, planet.y); //calculates the distance from current position to planet
+    let d = posY - planet.y;
+    d = Math.abs(d); //disregards +/-
+    if (distance < planet.radius) {
+      hasCrashed = true; //if the distance calculated by dist is less that the planets radius then you have crashed
 
-    //////////////////////////////////////////////code for collision/////////////////////////////////////////////////////////////////////
-    
-  let distance = dist(posX, posY, planet.x, planet.y);
-  let d = posY - planet.y;
-  d = Math.abs(d); //disregards +/-
-  if (distance < planet.radius) {
-  fill(255,255,0)
-  ellipse (posX, posY, 100)
-  console.log("Collision!")
-  } 
-    if (d < planet.radius/2 && posX > planet.x ){
+      //console.log("Collision!")
+    }
+    if (d < planet.radius / 2 && posX > planet.x) {
       laserHitX = planet.x;
-      isHit =true;
-  } 
+      isHit = true;
+    }
     //planet
     stroke(0);
     fill(255);
@@ -162,7 +182,7 @@ function planetAnimation() {
     noFill();
     strokeWeight(8);
     stroke(random(255), random(255), random(255), random(80, 100));
-    ellipse(planet.x, planet.y, planet.radius+30, planet.radius/2);
+    ellipse(planet.x, planet.y, planet.radius + 30, planet.radius / 2);
     fill(255, 255, 255);
     strokeWeight(0);
     stroke(0);
@@ -174,7 +194,7 @@ function planetAnimation() {
     }
   }
 
-  if(isHit == false) {
+  if (isHit == false) {
     laserHitX = 0;
   }
 }
@@ -280,7 +300,7 @@ function ufo() {
 function rocket() {
   //draws the rocket
   //flames
-  
+
   let r = random(210, 255);
   let g = random(60, 130);
   let b = random(0, 40);
@@ -303,32 +323,11 @@ function rocket() {
   //top
   noStroke();
   fill(23, 77, 158);
-  triangle(
-    posX - 17,
-    posY - 7.5,
-    posX - 17,
-    posY + 7.5,
-    posX - 35,
-    posY - 0
-  );
+  triangle(posX - 17, posY - 7.5, posX - 17, posY + 7.5, posX - 35, posY - 0);
   //upper rear wing
-  triangle(
-    posX + 39.5,
-    posY - 12.5,
-    posX + 20,
-    posY,
-    posX - 35,
-    posY + 0
-  );
+  triangle(posX + 39.5, posY - 12.5, posX + 20, posY, posX - 35, posY + 0);
   //lower rear wing
-  triangle(
-    posX + 39.5,
-    posY + 12.5,
-    posX + 20,
-    posY,
-    posX - 35,
-    posY + 0
-  );
+  triangle(posX + 39.5, posY + 12.5, posX + 20, posY, posX - 35, posY + 0);
   triangle(posX - 5, posY - 8, posX + 40, posY, posX - 5, posY + 8);
   noStroke();
   20;
@@ -369,59 +368,53 @@ function keyPressed() {
 
 //Accelerometer functions
 
-function gotData(){
+function gotData() {
   //console.log(serial.readLine());
   let currentString = serial.readLine();
 
-  trim (currentString);
+  trim(currentString);
   if (!currentString) return;
   let dataArray = currentString.split(" ");
   xPin = Number(dataArray[1]);
-  yPin = Number (dataArray[2]);
-  laser = Number (dataArray[3]);
+  yPin = Number(dataArray[2]);
+  laser = Number(dataArray[3]);
   // console.log("m");
   // console.log(dataArray[1]);
   // console.log(dataArray[2]);
   // console.log(dataArray[3]);
-  
 
   xAxis = xPin;
-  yAxis = yPin; 
-
+  yAxis = yPin;
 }
 
-function shootLaser(){
-  if (laser == 1){
+function shootLaser() {
+  if (laser == 1) {
     push();
-    stroke(r,g,b);
+    stroke(r, g, b);
     strokeWeight(3);
-    line(posX,posY,laserHitX, posY);
+    line(posX, posY, laserHitX, posY);
     pop();
-    
-   }
   }
+}
 
-function printList (portList){
+function printList(portList) {
   //postList is an array of serial port names
-  for (var i = 0; i < portList.length; i++){
+  for (var i = 0; i < portList.length; i++) {
     //Display the list of the console;
     console.log(i + portList[i]);
   }
-
-
 }
-function serverConnected(){
-  console.log('connected to server.');
+function serverConnected() {
+  console.log("connected to server.");
 }
 
-function portOpen(){
-  console.log('the serial port opened.');
+function portOpen() {
+  console.log("the serial port opened.");
 }
 function serialError(err) {
-  console.log('Something went wrong with the serial port.' + err)
+  console.log("Something went wrong with the serial port." + err);
 }
 
-function portClosed(){
-  console.log('The serial port closed.');
+function portClosed() {
+  console.log("The serial port closed.");
 }
-
