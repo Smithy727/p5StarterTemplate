@@ -29,6 +29,7 @@ let yPin;
 var laser;
 let laserHitX = 0;
 let img;
+let drawing;
 
 function setup() {
   // setup for accelerometer
@@ -84,7 +85,6 @@ function reSetup() {
 }
 
 function draw() {
-  if (drawing) {
     background(0);
     r = random(0, 255);
     g = random(0, 200);
@@ -147,7 +147,6 @@ function draw() {
       rocket();
     } else {
       ufo();
-    }
   }
 }
 
