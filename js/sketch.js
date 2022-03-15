@@ -20,7 +20,7 @@ let button;
 let hasCrashed = false;
 let crashTimer = 0;
 let serial; //variable to hold an instance of the serialport library
-let portName = "COM5"; //fill in your serial port name here
+let portName = "COM3"; //fill in your serial port name here
 let dataVal = 0;
 let xAxis;
 let yAxis;
